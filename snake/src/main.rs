@@ -27,12 +27,12 @@ pub struct Game {
 
 impl Game {
 	fn render(&mut self, args: &RenderArgs) {
-		use graphics;
+		//use graphics;
 
-		const blue: [f32; 4] = [0.0, 0.0, 1.0, 1.0];
+		const BLUE: [f32; 4] = [0.0, 0.0, 1.0, 1.0];
 
 		self.gl.draw(args.viewport(), |_c, gl| {
-			graphics::clear(blue, gl);
+			graphics::clear(BLUE, gl);
 
 		});
 
@@ -41,7 +41,7 @@ impl Game {
 		
 	}
 	
-	fn update(&mut self, args: &UpdateArgs) -> bool {
+	fn update(&mut self, _args: &UpdateArgs) -> bool {
 		if !self.snake.update(self.just_eaten, self.cols, self.rows) {
 			return false;
 		}
@@ -92,22 +92,22 @@ enum Direction {
 
 pub struct Snake {
 	gl: GlGraphics,
-	snake_parts: LinkedList<Snake_Piece>,
+	snake_parts: LinkedList<SnakePiece>,
 	width: u32,
 	d: Direction,
 }
 
 #[derive(Clone)]
-pub struct Snake_Piece(u32, u32);
+pub struct SnakePiece(u32, u32);
 
 impl Snake {
-	pub fn render(&mut self, gl: &mut GlGraphics, args: &RenderArgs) {
-		use graphics;
-		const red: [f32; 4] = [1.0, 0.0, 0.0, 1.0];
+	pub fn render(&mut self, _gl: &mut GlGraphics, args: &RenderArgs) {
+		//use graphics;
+		const RED: [f32; 4] = [1.0, 0.0, 0.0, 1.0];
 
 		let squares: Vec<graphics::types::Rectangle> = self.snake_parts
 			.iter()
-			.map(|p| Snake_Piece(p.0 * self.width, p.1 * self.width))
+			.map(|p| SnakePiece(p.0 * self.width, p.1 * self.width))
 			.map(|p| graphics::rectangle::square(p.0 as f64, p.1 as f64, self.width as f64))
 			.collect();
 
@@ -118,12 +118,12 @@ impl Snake {
 
 			squares
 				.into_iter()
-				.for_each(|square| graphics::rectangle(red, square, transform, gl));
+				.for_each(|square| graphics::rectangle(RED, square, transform, gl));
 		})
 	}
 	
 	pub fn update(&mut self, just_eaten: bool, cols: u32, rows: u32) -> bool {
-		let mut new_front: Snake_Piece = 
+		let mut new_front: SnakePiece = 
 			(*self.snake_parts.front().expect("No front of snake found.")).clone();
 		
 		if (self.d == Direction::UP && new_front.1 == 0)
@@ -174,9 +174,9 @@ impl Food {
 	}
 	
 	fn render(&mut self, gl: &mut GlGraphics, args: &RenderArgs, width: u32) {
-		use graphics;
+		//use graphics;
 		
-		const black: [f32; 4] = [1.0,1.0,1.0,1.0];
+		const BLACK: [f32; 4] = [1.0,1.0,1.0,1.0];
 
 		let x = self.x * width;
 		let y = self.y * width;
@@ -186,7 +186,7 @@ impl Food {
 		gl.draw(args.viewport(), |c, gl| {
 			let transform = c.transform;
 			
-			graphics::rectangle(black, square, transform, gl)
+			graphics::rectangle(BLACK, square, transform, gl)
 		});
 	}
 }
@@ -194,12 +194,12 @@ impl Food {
 fn main() {
 	let opengl = OpenGL::V3_2;
 
-	const cols: u32 = 30;
-	const rows: u32 = 20;
-	const square_width: u32 = 20;
+	const COLS: u32 = 30;
+	const ROWS: u32 = 20;
+	const SQUARE_WIDTH: u32 = 20;
 	
-	let width = cols * square_width;
-	let height = rows * square_width;
+	let width = COLS * SQUARE_WIDTH;
+	let height = ROWS * SQUARE_WIDTH;
 
 	let mut window: GlutinWindow = WindowSettings::new("Snake Game", [width, height])
 		.opengl(opengl)
@@ -209,16 +209,16 @@ fn main() {
 
 	let mut game = Game {
 		gl: GlGraphics::new(opengl),
-		rows: rows,
-		cols: cols,
-		square_width: square_width,
+		rows: ROWS,
+		cols: COLS,
+		square_width: SQUARE_WIDTH,
 		just_eaten: false,
 		food: Food {x: 1, y: 1},
 		score: 0,
 		snake: Snake {
 			gl: GlGraphics::new(opengl),
-			snake_parts: LinkedList::from_iter((vec![Snake_Piece(cols/2,rows/2)]).into_iter()),
-			width: square_width,
+			snake_parts: LinkedList::from_iter((vec![SnakePiece(COLS/2,ROWS/2)]).into_iter()),
+			width: SQUARE_WIDTH,
 			d: Direction::DOWN,
 		},
 	};
